@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kelseyhightower/envconfig"
 	"gopkg.in/yaml.v2"
 )
 
@@ -12,11 +13,10 @@ func processError(err error) {
 	os.Exit(2)
 }
 
-func readFile(path string, cfg *Config) (err error) {
+func ReadFile(path string, cfg *Config) {
 	f, err := os.Open(path)
 	if err != nil {
 		processError(err)
-		return err
 	}
 	defer f.Close()
 
@@ -25,5 +25,13 @@ func readFile(path string, cfg *Config) (err error) {
 	if err != nil {
 		processError(err)
 	}
-	return nil
 }
+
+func ReadEnv(cfg *Config) {
+	err := envconfig.Process("", cfg)
+	if err != nil {
+		processError(err)
+	}
+}
+
+

@@ -39,6 +39,10 @@ func initialize(args []string) confighelper.Config {
 	var cfg confighelper.Config
 	confighelper.ReadFile(configFile, &cfg)
 	confighelper.ReadEnv(&cfg)
+	OrgCount := len(cfg.Organizations)
+	if OrgCount == 0 {
+		var org confighelper.Organizations
+	}
 	var personalAccessToken, _ = arghelper.GetArgValue(args, "PAT")
 	var organizationUrl, _ = arghelper.GetArgValue(args, "organizationUrl")
 	var feedName, _ = arghelper.GetArgValue(args, "Feed")
