@@ -7,6 +7,7 @@ import (
 	"os"
 
 	arghelper "github.com/NAVRockClimber/BCAIS-Collector/helper"
+	confighelper "github.com/NAVRockClimber/BCAIS-Collector/helper/configHelper"
 	"github.com/NAVRockClimber/BCAIS-Collector/helper/feedhelper"
 	"github.com/microsoft/azure-devops-go-api/azuredevops"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/feed"
@@ -14,9 +15,7 @@ import (
 
 func main() {
 	arguments := os.Args[1:]
-	var personalAccessToken, _ = arghelper.GetArgValue(arguments, "PAT")
-	var organizationUrl, _ = arghelper.GetArgValue(arguments, "organizationUrl")
-	var feedName, _ = arghelper.GetArgValue(arguments, "Feed")
+	cfg := initialize(arguments)
 	connection := azuredevops.NewPatConnection(organizationUrl, personalAccessToken)
 	ctx := context.Background()
 
@@ -33,4 +32,14 @@ func main() {
 	}
 	fmt.Println(*myFeed.FullyQualifiedName)
 	fmt.Println(feedId)
+}
+
+func initialize(args []string) confighelper.Config {
+	var configFile, _ = arghelper.GetArgValue(args, "Config")
+	var cfg confighelper.Config
+	confighelper.ReadFile(configFile, &cfg)
+	confighelper.ReadEnv(&cfg)
+	var personalAccessToken, _ = arghelper.GetArgValue(args, "PAT")
+	var organizationUrl, _ = arghelper.GetArgValue(args, "organizationUrl")
+	var feedName, _ = arghelper.GetArgValue(args, "Feed")
 }
