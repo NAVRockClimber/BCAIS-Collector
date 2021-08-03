@@ -8,8 +8,10 @@ import (
 
 	arghelper "github.com/NAVRockClimber/BCAIS-Collector/helper"
 	"github.com/NAVRockClimber/BCAIS-Collector/helper/feedhelper"
+	mongoschema "github.com/NAVRockClimber/BCAIS-Collector/mongo/structs"
 	"github.com/microsoft/azure-devops-go-api/azuredevops"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/feed"
+	"github.com/ulule/deepcopier"
 )
 
 func main() {
@@ -31,6 +33,18 @@ func main() {
 		df := log.Default()
 		df.Fatal(err.Error())
 	}
-	fmt.Println(*myFeed.FullyQualifiedName)
+	var mongoFeed = &mongoschema.FeedDocument{}
+	deepcopier.Copy(myFeed).To(mongoFeed)
+	fmt.Println(*mongoFeed.FullyQualifiedName)
 	fmt.Println(feedId)
+	IncludeUrls := true
+	IncludeDescription := true
+	var packagesArg feed.GetPackagesArgs
+	packagesArg.FeedId = &feedName
+	packagesArg.IncludeUrls = &IncludeUrls
+	packagesArg.IncludeDescription = &IncludeDescription
+	packages, _ := feedClient.GetPackages(ctx, packagesArg)
+	for _, curpackage := range *packages {
+		fmt.Println(*curpackage.Name)
+	}
 }
